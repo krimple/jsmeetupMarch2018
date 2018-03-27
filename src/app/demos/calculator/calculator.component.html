@@ -1,0 +1,19 @@
+<div class="calculator">
+  <h3>Calculator</h3>
+  <div class="displayPanel">
+    <span class="content">
+      {{ current || accumulator }}
+    </span>
+  </div>
+  <div class="inputPanel">
+    <div *ngFor="let row of layout" class="row">
+      <app-calc-btn *ngFor="let button of row"
+        (keyEmitted)="keyReceived($event)"
+        [value]="button.value"
+        [action]="button.action"
+        [span]="button.span"></app-calc-btn>
+    </div>
+  </div>
+</div>
+
+<pre>{{ this | json }}</pre>
