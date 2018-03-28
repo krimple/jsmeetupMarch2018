@@ -1,7 +1,9 @@
+import { CUSTOM_ELEMENTS_SCHEMA } from '@angular/core';
 import { async, ComponentFixture, TestBed } from '@angular/core/testing';
 
-import { CalculatorComponent } from './calculator.component';
+import {CalculatorComponent} from './calculator.component';
 import {CalculatorButtonComponent} from './calculator-button.component';
+import {CalculatorEventTypeEnum} from './calculator-event-type.enum';
 
 describe('CalculatorComponent', () => {
   let component: CalculatorComponent;
@@ -9,12 +11,13 @@ describe('CalculatorComponent', () => {
 
   beforeEach(async(() => {
     TestBed.configureTestingModule({
+      schemas: [CUSTOM_ELEMENTS_SCHEMA],
       declarations: [ CalculatorComponent, CalculatorButtonComponent ]
     })
     .overrideComponent(CalculatorButtonComponent, {
-     set: {
+      set: {
        template: '<b>hi</b>'
-     }
+       }
     })
     .compileComponents();
   }));
@@ -27,5 +30,13 @@ describe('CalculatorComponent', () => {
 
   it('should create', () => {
     expect(component).toBeTruthy();
+  });
+
+  it('should add two numbers', () => {
+    component.accumulator = 10;
+    component.current = '12';
+    component.keyReceived({ value: '+',
+      eventType: CalculatorEventTypeEnum.OPERATION });
+    expect(component.accumulator).toBe(22);
   });
 });

@@ -1,9 +1,12 @@
 <div class="calculator">
   <h3>Calculator</h3>
   <div class="displayPanel">
-    <span class="content">
-      {{ current || accumulator }}
-    </span>
+    <div class="current">
+      {{ current | number }}
+    </div>
+    <div class="accumulator">
+      {{ accumulator | number }}
+    </div>
   </div>
   <div class="inputPanel">
     <div *ngFor="let row of layout" class="row">
@@ -16,4 +19,9 @@
   </div>
 </div>
 
-<pre>{{ this | json }}</pre>
+<div class="debug">
+  <pre>{{ [ 'accumulator: ', accumulator,
+            'current: ', current,
+            'memory: ', memory,
+            'lastAction', lastAction ] | json }}</pre>
+</div>

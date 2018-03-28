@@ -1,11 +1,23 @@
-import {Component, EventEmitter, Input, Output} from '@angular/core';
+import { Component,
+  ElementRef,
+  EventEmitter,
+  Input,
+  Output,
+  Renderer2,
+  ViewChild
+} from '@angular/core';
 import {CalculatorEvent} from './calculator-event.type';
+import {CalculatorEventTypeEnum, CalculatorEventTypeEnumDecorator} from './calculator-event-type.enum';
 
+@CalculatorEventTypeEnumDecorator
 @Component({
   selector: 'app-calc-btn',
   template: `
     <button (click)="sendClick()"
-      [ngClass]="{ action: action, data: !action }">
+      [ngClass]="{ action: action === CalculatorEventTypeEnum.OPERATION,
+                   data: action !== CalculatorEventTypeEnum.OPERATION,
+                   single: span === 'single',
+                   double: span === 'double'}">
       {{ value }}
     </button>
   `,
@@ -31,21 +43,28 @@ import {CalculatorEvent} from './calculator-event.type';
       background-color: blue;
       color: white;
     }
+    .single {
+      width: 90px;
+    }
+    .double {
+      width: 188px;
+    }
   `]
 })
 export class CalculatorButtonComponent {
   @Input() value: string;
-  @Input() action: 'action'|null = null;
-  @Input() span = 1;
+  @Input() action: CalculatorEventTypeEnum;
+  @Input() span:  'single' | 'double' = 'single';
   @Output() keyEmitted: EventEmitter<CalculatorEvent> = new EventEmitter();
+
+  CalculatorEventTypeEnum: typeof  CalculatorEventTypeEnum = CalculatorEventTypeEnum;
 
   sendClick() {
     // shape of the event
     const event: CalculatorEvent = {
       value: this.value,
-      eventType: this.action ? 'action' : 'data'
+      eventType: this.action
     };
     this.keyEmitted.emit(event);
   }
-
 }

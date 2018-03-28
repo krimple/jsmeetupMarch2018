@@ -1,65 +1,57 @@
 (function() {
-    'use strict';
+  'use strict';
 
-    var express = require('express');
-    var proxy = require('express-http-proxy');
+  const express = require('express');
+  const http = require('http');
+  const WebSocketServer = require('websocket').server;
+  const app = express();
+  const server = http.createServer(app);
 
-    var http = require('http');
+  const wsServer = new WebSocketServer({
+    httpServer: server,
+    autoAcceptConnections: false
+  });
 
-    var WebSocketServer = require('websocket').server;
-    const app = express();
-    const server = http.createServer(app);
+  function originIsAllowed(origin) {
+    // TODO if you need to secure the origin
+    return true;
+  }
 
-    const wsServer = new WebSocketServer({
-        httpServer: server,
-        // You should not use autoAcceptConnections for production
-        // applications, as it defeats all standard cross-origin protection
-        // facilities built into the protocol and the browser.  You should
-        // *always* verify the connection's origin and decide whether or not
-        // to accept it.
-        autoAcceptConnections: false
-    });
-
-    function originIsAllowed(origin) {
-        // TODO
-        return true;
+  wsServer.on('request', function(request) {
+    if (!originIsAllowed(request.origin)) {
+      request.reject();
+      console.log((new Date()) + ' Connection fron origin ' + request.origin + ' rejected.');
+      return;
     }
 
-    wsServer.on('request', function(request) {
-        if (!originIsAllowed(request.origin)) {
-            request.reject();
-            console.log((new Date()) + ' Connection fron origin ' + request.origin + ' rejected.');
-            return;
-        }
+    const connection = request.accept(null, request.origin);
 
-        var connection = request.accept('sinedata', request.origin);
-
-        observableSineWave(this, .1, 20);
-
-        connection.on('message', function(message) {
-            connection.sendUTF(message.utf8Data);
-        });
-
-        connection.on('close', function(reasonCode, description) {
-            console.log((new Date()) + ' Peer ' + connection.remoteAddress + ' disconnection. Reason: ' + reasonCode);
-        });
-
+    connection.on('message', function(message) {
+      connection.sendUTF(message.utf8Data);
     });
 
-    server.listen(3000, function () {
-        console.log('Example app listening on port 3000!');
+    connection.on('close', function(reasonCode, description) {
+      console.log((new Date()) + ' Peer ' + connection.remoteAddress + ' disconnection. Reason: ' + reasonCode);
     });
 
-    function deg2rad(val) {
-      return val * 0.0174533;
-    }
+  });
 
-    function observableSineWave(serverSocket, period) {
-        let waveVal = 0;
-        setInterval(function() {
-            waveVal = waveVal == 360 ? 0 : waveVal + 0.1;
-            serverSocket.broadcast(JSON.stringify({ value: Math.sin(deg2rad(waveVal)) }));
-        }, period);
-    }
+  server.listen(3000, () => {
+    console.log('Example app listening on port 3000!');
+    // spawn one generator
+    observableSineWave(200);
+  });
+
+  function deg2rad(val) {
+    return val * 0.0174533;
+  }
+
+  function observableSineWave(period) {
+    let waveVal = 0;
+    setInterval(function() {
+      waveVal = waveVal == 360 ? 0 : waveVal + 0.1;
+      wsServer.broadcast(JSON.stringify({ value: Math.sin(deg2rad(waveVal)) }));
+    }, period);
+  }
 
 }());

@@ -15,15 +15,11 @@ div {
   padding-left: 15px;
   padding-bottom: 15px;
   border: 2px solid red;
-
-
 }
 
 .displayPanel {
-  .content {
-    font-size: 25pt;
-    padding: 5px;
-  }
+  font-size: 25pt;
+  padding: 5px;
   width: $maxWidth;
   height: 50px;
   border: 2px solid blue;
@@ -31,5 +27,22 @@ div {
   padding-top: 15px;
   padding-left: 15px;
   padding-bottom: 15px;
+  .current {
+    float: left;
+  }
+  .accumulator {
+    float: right;
+  }
 }
 
+.calculator {
+  float: left;
+  padding-right: 20px;
+}
+
+.debug {
+  width: $maxWidth;
+  font-size: 2em;
+  float: right;
+
+}

@@ -3,6 +3,7 @@ import {CalculatorButtonComponent} from './calculator-button.component';
 import {DebugElement, ElementRef} from '@angular/core';
 import {CalculatorEvent} from './calculator-event.type';
 import {By} from '@angular/platform-browser';
+import {CalculatorEventTypeEnum} from './calculator-event-type.enum';
 
 describe('Calculator Button Component', () => {
   let fixture: ComponentFixture<CalculatorButtonComponent>;
@@ -34,7 +35,8 @@ describe('Calculator Button Component', () => {
   describe('As a data button', () => {
     // properly wire the component inputs
     beforeEach(async (() => {
-      component.value = 9;
+      component.value = '9';
+      component.action = CalculatorEventTypeEnum.NUMBER;
       fixture.detectChanges();
     }));
 
@@ -48,8 +50,8 @@ describe('Calculator Button Component', () => {
       tick();
       console.dir(event);
       expect(emitted).toBeTruthy();
-      expect(event.eventType).toBe('data');
-      expect(event.value).toBe(9);
+      expect(event.eventType).toBe(CalculatorEventTypeEnum.NUMBER);
+      expect(event.value).toBe('9');
     }));
 
     it('should contain the right style class', () => {
